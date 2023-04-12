@@ -25,6 +25,41 @@ const is_date_lies_btw_range = (dob, bill) => {
     const orderDate = new Date(bill_date).getTime();
     const days_diff = Math.floor((birthday - orderDate) / (1000 * 3600 * 24));
 
+
+const calculate_payableAmt = (x) => {
+    const currProd = x[json_keys.PRODUCTS];
+    const payableAmt = currProd.reduce((acc, ele) => acc + ele[json_keys.paidAmt], 0);
+    return payableAmt;
+}
+
+const add_payableAmt = (json) => {
+    const all_bills = json[json_keys.BILLS];
+    all_bills.map((x) => {
+        x[json_keys.payableAmt] = calculate_payableAmt(x);
+    })
+    return json;
+}
+
+
+const find_grossTot = (ele) => {
+    const price = ele[json_keys.PRICE];
+    const quantity = ele[json_keys.QUANTITY];
+    const taxAmt = ele[json_keys.taxAmt];
+    const grossTotal = (price * quantity) + taxAmt;
+    return grossTotal;
+}
+
+
+const add_grossTotal = (json) => {
+    json[json_keys.BILLS].map((x) => {
+        const grossTotal = x[json_keys.PRODUCTS].reduce((acc, ele) => {
+            return acc + find_grossTot(ele);
+        }, 0);
+        x[json_keys.grossTotal] = grossTotal;
+    });
+
+    return json;
+}
     return days_diff <= 30
 }
 
@@ -51,6 +86,7 @@ const add_lastBillDate = (json) => {
     json.lastBillDate = lastBillDate;
     return json;
 }
+
 
 
 function add_ltv(json) {
@@ -103,7 +139,7 @@ const add_age = (json) => {
 };
 
 // add your functions here
-const update_bill_functions = [add_age, add_paidAmt, add_ltv, add_lastBillDate, is_date_lies_btw_range,is_bought_for_birthday];
+const update_bill_functions = [add_age, add_paidAmt, add_ltv, add_lastBillDate, is_date_lies_btw_range,is_bought_for_birthday,add_grossTotal, add_payableAmt];
 
 
 // driver code to read and write json file
