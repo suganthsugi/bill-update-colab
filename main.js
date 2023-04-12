@@ -64,7 +64,7 @@ const add_age = (json) => {
 };
 
 // add your functions here
-const update_bill_functions = [];
+const update_bill_functions = [add_age, add_paidAmt];
 
 // driver code to read and write json file
 var json = require("./bill.json");
