@@ -20,12 +20,31 @@ const json_keys = {
 // define your functions here
 
 
+const get_recent_billDate = (recent, curr) => {
+    const recentDate = new Date(recent);
+    const currDate = new Date(curr);
+    return recentDate > currDate ? recentDate : currDate;
+}
+
+const add_lastBillDate = (json) => {
+    var lastBillDate = json[json_keys.BILLS].reduce((acc, ele) => get_recent_billDate(acc, ele[json_keys.DATE]), 0);
+    json.lastBillDate = lastBillDate;
+    return json;
+}
+
+
+function add_ltv(json) {
+    const ltv = json[json_keys.BILLS].reduce((acc, ele) => ele[json_keys.payableAmt] + acc, 0);
+    json[json_keys.ltv] = ltv;
+    return json;
+}
+
 
 
 
 
 // add your functions here
-const update_bill_functions = [];
+const update_bill_functions = [add_ltv, add_lastBillDate];
 
 
 
