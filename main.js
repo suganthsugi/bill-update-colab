@@ -18,6 +18,26 @@ const json_keys = {
 };
 
 // define your functions here
+
+const get_recent_billDate = (recent, curr) => {
+    const recentDate = new Date(recent);
+    const currDate = new Date(curr);
+    return recentDate > currDate ? recentDate : currDate;
+}
+
+const add_lastBillDate = (json) => {
+    var lastBillDate = json[json_keys.BILLS].reduce((acc, ele) => get_recent_billDate(acc, ele[json_keys.DATE]), 0);
+    json.lastBillDate = lastBillDate;
+    return json;
+}
+
+
+function add_ltv(json) {
+    const ltv = json[json_keys.BILLS].reduce((acc, ele) => ele[json_keys.payableAmt] + acc, 0);
+    json[json_keys.ltv] = ltv;
+    return json;
+}
+
 function get_discount_format(discount) {
   const discount_string = discount.slice(0, discount.length - 1); // to remove %
   return Number(discount_string);
@@ -26,9 +46,7 @@ function get_discount_format(discount) {
 const calculate_paidAmt = (product, discount) => {
   const price = product[json_keys.PRICE];
   const quantity = product[json_keys.QUANTITY];
-
   const price_for_n_items = price * quantity;
-
   discount = get_discount_format(discount);
   const discountAmt = (discount / 100) * price_for_n_items;
 
@@ -64,7 +82,7 @@ const add_age = (json) => {
 };
 
 // add your functions here
-const update_bill_functions = [add_age, add_paidAmt];
+const update_bill_functions = [add_age, add_paidAmt, add_ltv, add_lastBillDate];
 
 // driver code to read and write json file
 var json = require("./bill.json");
