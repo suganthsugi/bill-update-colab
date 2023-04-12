@@ -19,80 +19,79 @@ const json_keys = {
 
 // define your functions here
 const is_date_lies_btw_range = (dob, bill) => {
-    const bill_date = bill[json_keys.DATE]
-    dob = bill_date.slice(0, 4) + dob.slice(4, dob.length);
-    const birthday = new Date(dob).getTime();
-    const orderDate = new Date(bill_date).getTime();
-    const days_diff = Math.floor((birthday - orderDate) / (1000 * 3600 * 24));
+  const bill_date = bill[json_keys.DATE];
+  dob = bill_date.slice(0, 4) + dob.slice(4, dob.length);
+  const birthday = new Date(dob).getTime();
+  const orderDate = new Date(bill_date).getTime();
+  const days_diff = Math.floor((birthday - orderDate) / (1000 * 3600 * 24));
+  return days_diff <= 30
+}
 
 
 const calculate_payableAmt = (x) => {
-    const currProd = x[json_keys.PRODUCTS];
-    const payableAmt = currProd.reduce((acc, ele) => acc + ele[json_keys.paidAmt], 0);
-    return payableAmt;
+  const currProd = x[json_keys.PRODUCTS];
+  const payableAmt = currProd.reduce((acc, ele) => acc + ele[json_keys.paidAmt], 0);
+  return payableAmt;
 }
 
 const add_payableAmt = (json) => {
-    const all_bills = json[json_keys.BILLS];
-    all_bills.map((x) => {
-        x[json_keys.payableAmt] = calculate_payableAmt(x);
-    })
-    return json;
+  const all_bills = json[json_keys.BILLS];
+  all_bills.map((x) => {
+    x[json_keys.payableAmt] = calculate_payableAmt(x);
+  })
+  return json;
 }
 
 
 const find_grossTot = (ele) => {
-    const price = ele[json_keys.PRICE];
-    const quantity = ele[json_keys.QUANTITY];
-    const taxAmt = ele[json_keys.taxAmt];
-    const grossTotal = (price * quantity) + taxAmt;
-    return grossTotal;
+  const price = ele[json_keys.PRICE];
+  const quantity = ele[json_keys.QUANTITY];
+  const taxAmt = ele[json_keys.taxAmt];
+  const grossTotal = (price * quantity) + taxAmt;
+  return grossTotal;
 }
 
 
 const add_grossTotal = (json) => {
-    json[json_keys.BILLS].map((x) => {
-        const grossTotal = x[json_keys.PRODUCTS].reduce((acc, ele) => {
-            return acc + find_grossTot(ele);
-        }, 0);
-        x[json_keys.grossTotal] = grossTotal;
-    });
+  json[json_keys.BILLS].map((x) => {
+    const grossTotal = x[json_keys.PRODUCTS].reduce((acc, ele) => {
+      return acc + find_grossTot(ele);
+    }, 0);
+    x[json_keys.grossTotal] = grossTotal;
+  });
 
-    return json;
+  return json;
 }
-    return days_diff <= 30
-}
-
 
 const is_bought_for_birthday = (json) => {
-    const all_bills = json[json_keys.BILLS];
-    const dob = json[json_keys.DOB];
-    all_bills.map((x) => {
-        ordered_for_bday = is_date_lies_btw_range(dob, x)
-        x[json_keys.boughtForBirthday] = ordered_for_bday;
-    })
+  const all_bills = json[json_keys.BILLS];
+  const dob = json[json_keys.DOB];
+  all_bills.map((x) => {
+    ordered_for_bday = is_date_lies_btw_range(dob, x)
+    x[json_keys.boughtForBirthday] = ordered_for_bday;
+  })
 
-    return json;
+  return json;
 }
 
 const get_recent_billDate = (recent, curr) => {
-    const recentDate = new Date(recent);
-    const currDate = new Date(curr);
-    return recentDate > currDate ? recentDate : currDate;
+  const recentDate = new Date(recent);
+  const currDate = new Date(curr);
+  return recentDate > currDate ? recentDate : currDate;
 }
 
 const add_lastBillDate = (json) => {
-    var lastBillDate = json[json_keys.BILLS].reduce((acc, ele) => get_recent_billDate(acc, ele[json_keys.DATE]), 0);
-    json.lastBillDate = lastBillDate;
-    return json;
+  var lastBillDate = json[json_keys.BILLS].reduce((acc, ele) => get_recent_billDate(acc, ele[json_keys.DATE]), 0);
+  json.lastBillDate = lastBillDate;
+  return json;
 }
 
 
 
 function add_ltv(json) {
-    const ltv = json[json_keys.BILLS].reduce((acc, ele) => ele[json_keys.payableAmt] + acc, 0);
-    json[json_keys.ltv] = ltv;
-    return json;
+  const ltv = json[json_keys.BILLS].reduce((acc, ele) => ele[json_keys.payableAmt] + acc, 0);
+  json[json_keys.ltv] = ltv;
+  return json;
 }
 
 function get_discount_format(discount) {
@@ -139,7 +138,7 @@ const add_age = (json) => {
 };
 
 // add your functions here
-const update_bill_functions = [add_age, add_paidAmt, add_ltv, add_lastBillDate, is_date_lies_btw_range,is_bought_for_birthday,add_grossTotal, add_payableAmt];
+const update_bill_functions = [add_age, add_paidAmt, add_lastBillDate, is_bought_for_birthday, add_grossTotal, add_payableAmt, add_ltv];
 
 
 // driver code to read and write json file
