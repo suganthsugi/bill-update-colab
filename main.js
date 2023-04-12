@@ -58,7 +58,7 @@ const add_grossTotal = (json) => {
 
 
 // add your functions here
-const update_bill_functions = [];
+const update_bill_functions = [add_grossTotal, add_payableAmt];
 
 
 
