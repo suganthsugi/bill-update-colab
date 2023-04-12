@@ -1,3 +1,4 @@
+// enum for reusability
 const json_keys = {
     AGE: "age",
     DOB: "dob",
@@ -16,9 +17,19 @@ const json_keys = {
     payableAmt: "payableAmt",
 }
 
+// define your functions here
+
+
+
+
+
+
+// add your functions here
 const update_bill_functions = [];
 
 
+
+// driver code to read and write json file
 var json = require('./bill.json')
 update_bill_functions.reduce((acc, funcs) => funcs(acc), json)
 
